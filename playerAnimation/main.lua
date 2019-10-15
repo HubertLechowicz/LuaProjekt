@@ -18,6 +18,7 @@ directionDown = false -- still figuring out where to use these
 
 
 function love.load()
+
     background = love.graphics.newImage("background.png")
     player = love.graphics.newImage("hummy64x64.png")
     walkingFramesDown[1] = love.graphics.newQuad(0, 0, 29, 57, player:getDimensions())
@@ -44,6 +45,8 @@ function love.load()
 end
 
 function love.update(dt)
+      -- FULL SCREEN, ZAMYKAĆ ALT+F4
+     -- love.window.setFullscreen(true, "desktop")
     elapsedTime = elapsedTime + dt
     if love.keyboard.isDown("down") then
         isWalking = true -- I just have this in case I need to use it later
