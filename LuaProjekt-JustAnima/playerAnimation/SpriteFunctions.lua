@@ -6,10 +6,10 @@ require  "main"
      a_top = player_y
      a_bottom = player_y + player:getHeight()
 
-    b_left = b.x
-    b_right = b.x + enemy:getWidth()
-    b_top = b.y
-    b_bottom = b.y + enemy:getHeight()
+    b_left = enemy_x
+    b_right = enemy_x + enemy:getWidth()
+    b_top = enemy_y
+    b_bottom = enemy_y + enemy:getHeight()
 
     --Jesli prawa strona Czerwonego znajduje sie bardziej na prawo niz lewa strona Niebieskiego :
     if a_right > b_left and

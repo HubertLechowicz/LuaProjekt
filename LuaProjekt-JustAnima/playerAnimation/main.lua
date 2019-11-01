@@ -14,20 +14,19 @@ directionRight = false -- still figuring out where to use these
 directionLeft = false -- still figuring out where to use these
 directionUp = false -- still figuring out where to use these
 directionDown = false -- still figuring out where to use these
-enemy_x = 640 -- 640x640 jest zjebane lokacja poczatkowa
+enemy_x = 320 -- 640x640 jest zjebane lokacja poczatkowa
 enemy_y = 640
-
+local text = {}
 
 function love.load()
+HC = require 'HC'
 require 'SpriteFunctions'
 --loadfile 'SpriteFunctions.lua'()
 
-    r2 = {
-        x = 640,
-        y = 640,
-        width = 64,
-        height = 64
-    }
+  rectPlayer = HC.rectangle(player_x,player_y,32,64)
+  rectEnemy = HC.rectangle(enemy_x,enemy_y,64,64)
+
+
 
     background = love.graphics.newImage("background.png")
     player = love.graphics.newImage("hummy64x64.png")
@@ -64,12 +63,22 @@ require 'SpriteFunctions'
 end
 
 function love.update(dt)
+  for shape, delta in pairs(HC.collisions(rectEnemy)) do
+         text[#text+1] = string.format("Colliding. Separating vector = (%s,%s)",
+                                       delta.x, delta.y)
+     end
+     while #text > 40 do
+          table.remove(text, 1)
+      end
+
+                                     
       -- FULL SCREEN, ZAMYKAĆ ALT+F4
       love.window.setFullscreen(true, "desktop")
     elapsedTime = elapsedTime + dt
     if love.keyboard.isDown("down") then
         isWalking = true -- I just have this in case I need to use it later
         player_y = player_y + playerSpeed * dt
+        rectPlayer:moveTo(player_x + 32,player_y +32)
         if (elapsedTime > 0.1) then
             if (currentFrame < 4) then
                 currentFrame = currentFrame + 1
@@ -89,6 +98,7 @@ function love.update(dt)
     if love.keyboard.isDown("up") then
         isWalking = true
         player_y = player_y - playerSpeed * dt
+        rectPlayer:moveTo(player_x + 32,player_y +32)
         if (elapsedTime > 0.1) then
             if (currentFrame < 4) then
                 currentFrame = currentFrame + 1
@@ -103,6 +113,7 @@ function love.update(dt)
     if love.keyboard.isDown("right") then
         isWalking = true
         player_x = player_x + playerSpeed * dt
+        rectPlayer:moveTo(player_x + 32,player_y +32)
         if (elapsedTime > 0.1) then
             if (currentFrame < 4) then
                 currentFrame = currentFrame + 1
@@ -117,6 +128,7 @@ function love.update(dt)
     if love.keyboard.isDown("left") then
         isWalking = true
         player_x = player_x - playerSpeed * dt
+        rectPlayer:moveTo(player_x + 32,player_y +32)
         if (elapsedTime > 0.1) then
             if (currentFrame < 4) then
                 currentFrame = currentFrame + 1
@@ -132,15 +144,6 @@ end
 
 function love.draw()
 
-  if checkCollision(r2) then
-
-
-    if checkCollisionTop(r2) then
-      player_y = player_y - 10
-    end
-  else
-    r2.width = 64
-  end
 
 
 
@@ -149,9 +152,15 @@ function love.draw()
           love.graphics.draw(background, i * background:getWidth(), j * background:getHeight())
       end
   end
+  for i = 1,#text do
+        love.graphics.setColor(255,255,255, 255 - (i-1) * 6)
+        love.graphics.print(text[#text - (i-1)], 10, i * 15)
+    end
+
     love.graphics.draw(player,activeFrame, player_x, player_y)
     love.graphics.draw(enemy, enemy_x, enemy_y)
-    --love.graphics.rectangle('fill',r2.x, r2.y, r2.width, r2.height)
-    --love.graphics.print(r2.y, 100, 100, 10, 250, 0, 0, 0)
-    --love.graphics.print("This lame example is twice as big.", 1000, 250, 0, 0, 0)
+    love.graphics.setColor(255,255,255)
+    rectPlayer:draw('line')
+    rectEnemy:draw('line')
+
 end
