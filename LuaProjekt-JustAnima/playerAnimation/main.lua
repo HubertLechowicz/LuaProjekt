@@ -6,9 +6,11 @@ walkingFramesDown = {}
 activeFrame = 0
 currentFrame = 2
 elapsedTime = 0
+elapsedTime2 = 0
 player_x = 64
 player_y = 900
 playerSpeed = 200
+enemySpeed = 200
 isWalking = false
 directionRight = false -- still figuring out where to use these
 directionLeft = false -- still figuring out where to use these
@@ -18,15 +20,20 @@ enemy_x = 320 -- 640x640 jest zjebane lokacja poczatkowa
 enemy_y = 640
 local text = {}
 kickback  = 12
+DirectionChange = false
 function love.load()
 HC = require 'HC'
 require 'SpriteFunctions'
 --loadfile 'SpriteFunctions.lua'()
-
+scale = 'adaptive'
   rectPlayer = HC.rectangle(player_x,player_y,32,64)
   rectEnemy = HC.rectangle(enemy_x,enemy_y,64,64)
-  rectFloor = HC.rectangle(player_x + 100,player_y - 300 + 100,640,64)
-
+  rectFloor = HC.rectangle(player_x + 100,player_y - 200,1200,16)
+  rectFloor2 = HC.rectangle(player_x + 100,player_y - 500,1200,16)
+  rectFloor3 = HC.rectangle(player_x + 100,player_y - 800,1200,16)
+  rectPortal = HC.rectangle(player_x + 150,player_y ,64,64)
+  rectPortal2 = HC.rectangle(player_x + 24,player_y-264 ,64,64)
+  rectPortal3 = HC.rectangle(player_x + 500,player_y-564 ,64,64)
 
     background = love.graphics.newImage("background.png")
     player = love.graphics.newImage("hummy64x64.png")
@@ -63,20 +70,32 @@ require 'SpriteFunctions'
 end
 
 function love.update(dt)
-  --for shape, delta in pairs(HC.collisions(rectEnemy)) do
-         --text[#text+1] = string.format("Colliding. Separating vector = (%s,%s)",
-                                  --     delta.x, delta.y)
 
      --end
 
      while #text > 40 do
           table.remove(text, 1)
       end
-
-
-      -- FULL SCREEN, ZAMYKAĆ ALT+F4
+      -- FULL SCREEN, ZAMYKAĆ ESC
+      if love.keyboard.isDown("escape") then
+          love.event.quit(0)
+        end
       love.window.setFullscreen(true, "desktop")
     elapsedTime = elapsedTime + dt
+    elapsedTime2 = elapsedTime2 + dt
+
+    while  (elapsedTime2 > 0.01) do
+          enemy_x = enemy_x + enemySpeed * dt
+          rectEnemy:moveTo(enemy_x + 32,enemy_y + 32)
+          elapsedTime2 = 0
+          if enemy_x > 1000 then
+            enemySpeed = -enemySpeed
+          end
+          if enemy_x < 300 then
+            enemySpeed = -enemySpeed
+          end
+      end
+
     if love.keyboard.isDown("down") then
       if rectPlayer:collidesWith(rectEnemy) then
           text[#text+1] = string.format(" DOWN collision detected! ")
@@ -88,23 +107,8 @@ function love.update(dt)
           player_y = player_y - kickback
       end
         isWalking = true -- I just have this in case I need to use it later
-        player_y = player_y + playerSpeed * dt
-        rectPlayer:moveTo(player_x + 32,player_y +32)
-        --if (elapsedTime > 0.1) then
-            --if (currentFrame < 4) then
-              --  currentFrame = currentFrame + 1
-          --  else
-            --    currentFrame = 1
-          --  end
-          --  activeFrame = walkingFramesDown[currentFrame]
-          --  elapsedTime = 0
-      --  end
 
     end
-
-    -- if love.keyreleased("down") then
-    --     directionDown = true
-    -- end
 
     if love.keyboard.isDown("up") then
       if rectPlayer:collidesWith(rectEnemy) then
@@ -117,17 +121,6 @@ function love.update(dt)
           player_y = player_y + kickback
       end
         isWalking = true
-        player_y = player_y - playerSpeed * dt
-        rectPlayer:moveTo(player_x + 32,player_y +32)
-      --  if (elapsedTime > 0.1) then
-        --    if (currentFrame < 4) then
-          --      currentFrame = currentFrame + 1
-          --  else
-          --      currentFrame = 1
-          --  end
-          --  activeFrame = walkingFramesUp[currentFrame]
-          --  elapsedTime = 0
-        --end
 
     end
     if love.keyboard.isDown("right") then
@@ -139,6 +132,18 @@ function love.update(dt)
       if rectPlayer:collidesWith(rectFloor) then
           text[#text+1] = string.format(" RIGHT_Floor collision detected! ")
           player_x = player_x - kickback
+      end
+      if rectPlayer:collidesWith(rectPortal) then
+          text[#text+1] = string.format(" RIGHT_Portal collision detected! ")
+          player_y = player_y - 265
+      end
+      if rectPlayer:collidesWith(rectPortal2) then
+          text[#text+1] = string.format(" RIGHT_Portal2 collision detected! ")
+          player_y = player_y - 300
+      end
+      if rectPlayer:collidesWith(rectPortal3) then
+          text[#text+1] = string.format(" RIGHT_Portal3 collision detected! ")
+          player_y = player_y - 300
       end
         isWalking = true
         player_x = player_x + playerSpeed * dt
@@ -163,6 +168,18 @@ function love.update(dt)
       if rectPlayer:collidesWith(rectFloor) then
           text[#text+1] = string.format(" LEFT_Floor collision detected! ")
           player_x = player_x + kickback
+      end
+      if rectPlayer:collidesWith(rectPortal) then
+          text[#text+1] = string.format(" LEFT_Portal collision detected! ")
+          player_y = player_y - 265
+      end
+      if rectPlayer:collidesWith(rectPortal2) then
+          text[#text+1] = string.format(" LEFT_Portal2 collision detected! ")
+          player_y = player_y - 300
+      end
+      if rectPlayer:collidesWith(rectPortal3) then
+          text[#text+1] = string.format(" LEFT_Portal3 collision detected! ")
+          player_y = player_y - 300
       end
         isWalking = true
         player_x = player_x - playerSpeed * dt
@@ -197,8 +214,15 @@ function love.draw()
 
     love.graphics.draw(player,activeFrame, player_x, player_y)
     love.graphics.draw(enemy, enemy_x, enemy_y)
-    love.graphics.setColor(255,255,255)
+
     rectPlayer:draw('line')
     rectEnemy:draw('line')
+
     rectFloor:draw('fill')
+    rectFloor2:draw('fill')
+    rectFloor3:draw('fill')
+
+    rectPortal:draw('fill')
+    rectPortal2:draw('fill')
+    rectPortal3:draw('fill')
 end
