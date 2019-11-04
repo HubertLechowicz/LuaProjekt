@@ -12,16 +12,10 @@ player_y = 900
 playerSpeed = 200
 enemySpeed = 200
 isWalking = false
-directionRight = false -- still figuring out where to use these
-directionLeft = false -- still figuring out where to use these
-directionUp = false -- still figuring out where to use these
-directionDown = false -- still figuring out where to use these
 enemy_x = 320 -- 640x640 jest zjebane lokacja poczatkowa
 enemy_y = 640
 portal_x = 64
 portal_y = 64
-
-
 kickback  = 12
 DirectionChange = false
 
@@ -45,6 +39,8 @@ scale = 'adaptive'
   rectPortal3 = HC.rectangle(player_x + 500,player_y-564 ,64,64)
 
   rectPortalExit = HC.rectangle(player_x + 1200, player_y-864 ,64,64)
+  rectPortalReplay = HC.rectangle(player_x + 100, player_y - 864, 64, 64)
+
 
 
     background = love.graphics.newImage("background.png")
@@ -52,6 +48,7 @@ scale = 'adaptive'
     enemy = love.graphics.newImage("enemy64x64.png")
     portal = love.graphics.newImage("portal.png")
     portalExit = love.graphics.newImage("portalblue.png")
+    portalReplay = love.graphics.newImage("portalyellow.png")
 
     walkingFramesDown[1] = love.graphics.newQuad(0, 0, 64, 64, player:getDimensions())
     walkingFramesDown[2] = love.graphics.newQuad(0, 0, 64, 64, player:getDimensions())
@@ -96,7 +93,7 @@ function love.update(dt)
           love.event.quit(0)
         end
       if love.keyboard.isDown('r') then
-        text[#text+1] = string.format(" RESET to starting localisation. ")
+        text[#text+1] = string.format(" RESET to starting location. ")
         player_x = 64
         player_y = 900
       end
@@ -116,42 +113,12 @@ function love.update(dt)
           end
       end
 
-    if love.keyboard.isDown("down") or love.keyboard.isDown('s') then
-      if rectPlayer:collidesWith(rectEnemy) then
-          text[#text+1] = string.format(" DOWN collision detected! ")
-          player_x = 64
-          player_y = 900
-      end
-      if rectPlayer:collidesWith(rectFloor) then
-          text[#text+1] = string.format(" DOWN_Floor collision detected! ")
-          player_y = player_y - kickback
-      end
-        isWalking = true -- I just have this in case I need to use it later
 
-    end
-
-    if love.keyboard.isDown("up") or love.keyboard.isDown('w')then
-      if rectPlayer:collidesWith(rectEnemy) then
-          text[#text+1] = string.format(" UP collision detected!")
-          player_x = 64
-          player_y = 900
-      end
-      if rectPlayer:collidesWith(rectFloor) then
-          text[#text+1] = string.format(" UP_Floor collision detected! ")
-          player_y = player_y + kickback
-      end
-        isWalking = true
-
-    end
     if love.keyboard.isDown("right") or love.keyboard.isDown('d') then
       if rectPlayer:collidesWith(rectEnemy) then
           text[#text+1] = string.format("RIGHT collision detected!")
           player_x = 64
           player_y = 900
-      end
-      if rectPlayer:collidesWith(rectFloor) then
-          text[#text+1] = string.format(" RIGHT_Floor collision detected! ")
-          player_x = player_x - kickback
       end
       if rectPlayer:collidesWith(rectPortal) then
           text[#text+1] = string.format(" RIGHT_Portal collision detected! ")
@@ -169,6 +136,11 @@ function love.update(dt)
           text[#text+1] = string.format("Congratz.")
           love.event.quit(0)
       end
+      if rectPlayer:collidesWith(rectPortalReplay) then
+        text[#text+1] = string.format("U activated another round boiiii.")
+        player_x = 64
+        player_y = 900
+      end
         isWalking = true
         player_x = player_x + playerSpeed * dt
         rectPlayer:moveTo(player_x + 32,player_y +32)
@@ -181,17 +153,12 @@ function love.update(dt)
             activeFrame = walkingFramesRight[currentFrame]
             elapsedTime = 0
         end
-
     end
     if love.keyboard.isDown("left") or love.keyboard.isDown('a')then
       if rectPlayer:collidesWith(rectEnemy) then
           text[#text+1] = string.format("LEFT collision detected!")
           player_x = 64
           player_y = 900
-      end
-      if rectPlayer:collidesWith(rectFloor) then
-          text[#text+1] = string.format(" LEFT_Floor collision detected! ")
-          player_x = player_x + kickback
       end
       if rectPlayer:collidesWith(rectPortal) then
           text[#text+1] = string.format(" LEFT_Portal collision detected! ")
@@ -204,6 +171,11 @@ function love.update(dt)
       if rectPlayer:collidesWith(rectPortal3) then
           text[#text+1] = string.format(" LEFT_Portal3 collision detected! ")
           player_y = player_y - 300
+      end
+      if rectPlayer:collidesWith(rectPortalReplay) then
+        text[#text+1] = string.format("U activated another round boiiii.")
+        player_x = 64
+        player_y = 900
       end
         isWalking = true
         player_x = player_x - playerSpeed * dt
@@ -223,9 +195,6 @@ end
 
 function love.draw()
 
-
-
-
   for i = 0, love.graphics.getWidth() / background:getWidth() do
       for j = 0, love.graphics.getHeight() / background:getHeight() do
           love.graphics.draw(background, i * background:getWidth(), j * background:getHeight())
@@ -242,6 +211,7 @@ function love.draw()
     love.graphics.draw(portal, 88, 636 )
     love.graphics.draw(portal, 564, 336)
     love.graphics.draw(portalExit, 1264, 36)
+    love.graphics.draw(portalReplay,164, 36 )
 
     --rectPlayer:draw('line')
     --rectEnemy:draw('line')
@@ -254,4 +224,5 @@ function love.draw()
     --rectPortal2:draw('fill')
     --rectPortal3:draw('fill')
     --rectPortalExit:draw('fill')
+    --rectPortalReplay:draw('fill')
 end
