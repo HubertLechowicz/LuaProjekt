@@ -9,7 +9,13 @@ function love.load()
         height = 100
     }
 
-
+    --Stojacy
+    r2 = {
+        x = 250,
+        y = 120,
+        width = 150,
+        height = 120
+    }
 end
 
 function love.update(dt)
@@ -42,6 +48,7 @@ function love.draw()
 
     --Pierwszy argument
     love.graphics.rectangle(mode, r1.x, r1.y, r1.width, r1.height)
+    love.graphics.rectangle(mode, r2.x, r2.y, r2.width, r2.height)
 end
 
 --Lewa strona to pozycja x, prawa strona to pozycja x + szerokosc. To samo y i wysokosc
