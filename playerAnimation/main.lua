@@ -28,21 +28,21 @@ scale = 'adaptive'
   rectPlayer = HC.rectangle(player_x,player_y,32,64)
   rectEnemy = HC.rectangle(enemy_x,enemy_y,64,64)
 
-  rectFloor = HC.rectangle(player_x ,player_y - 200,1200,16)
-  rectFloor2 = HC.rectangle(player_x + 50,player_y - 500,1200,16)
-  rectFloor3 = HC.rectangle(player_x + 100,player_y - 800,1200,16)
+  rectFloor = HC.rectangle(64, 700, 1200, 16)
+  rectFloor2 = HC.rectangle(114, 400, 1200, 16)
+  rectFloor3 = HC.rectangle(164, 100, 1200,16)
 
-  rectPortal = HC.rectangle(player_x + 150,player_y ,64,64)
-  rectPortal2 = HC.rectangle(player_x + 24,player_y-264 ,64,64)
-  rectPortal3 = HC.rectangle(player_x + 500,player_y-564 ,64,64)
+  rectPortal = HC.rectangle(214, 900 ,64, 64)
+  rectPortal2 = HC.rectangle(88, 636 ,64, 64)
+  rectPortal3 = HC.rectangle(564, 336 ,64, 64)
 
-  rectPortalExit = HC.rectangle(player_x + 1200, player_y-864 ,64,64)
-  rectPortalReplay = HC.rectangle(player_x + 100, player_y - 864, 64, 64)
+  rectPortalExit = HC.rectangle(1264, 36, 64, 64)
+  rectPortalReplay = HC.rectangle(164, 36, 64, 64)
 
   rectBoxUp = HC.rectangle(0,-1,1920,1)       --0,-1, ,
   rectBoxDown = HC.rectangle (0,1080,1920,1) --0,1080,  ,
-  rectBoxLeft = HC.rectangle (-1,0,1,1080)    -- ,-1,0, ,
-  rectBoxRight = HC.rectangle(1920,0,1,1080)  --1920,0
+  rectBoxLeft = HC.rectangle (-40,0,1,1080)    -- -33,0, ,
+  rectBoxRight = HC.rectangle(1960,0,1,1080)  --1920,0
 
 local PNGs do
     background = love.graphics.newImage("background.png")
@@ -96,9 +96,9 @@ function love.update(dt)
       if love.keyboard.isDown("escape") then
           love.event.quit(0)
         end
-      --if love.keyboard.isDown('r') then
-      --  Replay()
-      --end
+      if love.keyboard.isDown('r') then
+        Replay()
+      end
       love.window.setFullscreen(true, "desktop")
     elapsedTime = elapsedTime + dt
     elapsedTime2 = elapsedTime2 + dt
@@ -132,9 +132,13 @@ function love.update(dt)
       if rectPlayer:collidesWith(rectPortalReplay) then
         Replay()
       end
-      if rectPlayer:collidesWith(rectBoxLeft) then
-        player_x = player_x + kickback
+      if rectPlayer:collidesWith(rectPortalExit) then
+        Wait()
       end
+      if rectPlayer:collidesWith(rectBoxRight) then
+        player_x = player_x - 1920
+      end
+
         isWalking = true
         player_x = player_x + playerSpeed * dt
         rectPlayer:moveTo(player_x + 32,player_y +32)
@@ -164,8 +168,11 @@ function love.update(dt)
       if rectPlayer:collidesWith(rectPortalReplay) then
         Replay()
       end
+      if rectPlayer:collidesWith(rectPortalExit) then
+        Wait()
+      end
       if rectPlayer:collidesWith(rectBoxLeft) then
-        player_x = player_x + kickback
+        player_x = player_x + 1920
       end
         isWalking = true
         player_x = player_x - playerSpeed * dt
@@ -240,4 +247,10 @@ local Functions do
       player_x = 64
       player_y = 900
   end
+
+  function Wait()
+    --love.event.quit(1)
+    love.event.wait()
+  end
+
 end
