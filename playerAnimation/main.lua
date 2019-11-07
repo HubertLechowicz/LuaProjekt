@@ -51,6 +51,7 @@ local PNGs do
     portal = love.graphics.newImage("portal.png")
     portalExit = love.graphics.newImage("portalblue.png")
     portalReplay = love.graphics.newImage("portalyellow.png")
+    platform = love.graphics.newImage("platform.png")
 end
 local Frames do
     walkingFramesDown[1] = love.graphics.newQuad(0, 0, 64, 64, player:getDimensions())
@@ -195,8 +196,15 @@ function love.draw()
   for i = 0, love.graphics.getWidth() / background:getWidth() do
       for j = 0, love.graphics.getHeight() / background:getHeight() do
           love.graphics.draw(background, i * background:getWidth(), j * background:getHeight())
-      end
+     end
   end
+
+for k = 3, 28 do
+  love.graphics.draw(platform, k * platform:getWidth(), 100)
+  love.graphics.draw(platform, (k-1) * platform:getWidth(), 400)
+  love.graphics.draw(platform, (k-2) * platform:getWidth(), 700)
+end
+
   for i = 1,#text do
         love.graphics.setColor(255,255,255, 255 - (i-1) * 6)
         love.graphics.print(text[#text - (i-1)], 10, i * 15)
@@ -209,11 +217,6 @@ function love.draw()
     love.graphics.draw(portal, 564, 336)
     love.graphics.draw(portalExit, 1264, 36)
     love.graphics.draw(portalReplay,164, 36 )
-
-    rectFloor:draw('fill')
-    rectFloor2:draw('fill')
-    rectFloor3:draw('fill')
-
 
 end
 
@@ -249,8 +252,8 @@ local Functions do
   end
 
   function Wait()
-    --love.event.quit(1)
-    love.event.wait()
+    --love.event.quit(1)  -- czeka na cos ale chuj wie na co, jebla idzie dostac
+    --love.event.wait()   -- stylowo wychodzi na pulpet
   end
 
 end
