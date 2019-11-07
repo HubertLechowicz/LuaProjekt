@@ -20,15 +20,15 @@ DirectionChange = false
 
 local text = {}
 local audio = love.audio.newSource('banditradio.mp3','static')
+local NANI = love.audio.newSource('NANI.mp3', 'static')
 function love.load()
     audio:setLooping(true)
-
     audio:play()
 
 HC = require 'HC'
 require 'SpriteFunctions'
 --loadfile 'SpriteFunctions.lua'()
-scale = 'adaptive'
+--scale = 'adaptive'
   rectPlayer = HC.rectangle(player_x,player_y,32,64)
   rectEnemy = HC.rectangle(enemy_x,enemy_y,64,64)
 
@@ -256,8 +256,11 @@ local Functions do
 
   function EnemyCollision()
       text[#text+1] = string.format("Enemy collision detected!")
+      NANI:play()
       player_x = 64
       player_y = 900
+
+
   end
 
   function Wait()
