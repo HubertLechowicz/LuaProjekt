@@ -19,8 +19,12 @@ kickback  = 12
 DirectionChange = false
 
 local text = {}
-
+local audio = love.audio.newSource('banditradio.mp3','static')
 function love.load()
+    audio:setLooping(true)
+
+    audio:play()
+
 HC = require 'HC'
 require 'SpriteFunctions'
 --loadfile 'SpriteFunctions.lua'()
@@ -38,6 +42,7 @@ scale = 'adaptive'
 
   rectPortalExit = HC.rectangle(1264, 36, 64, 64)
   rectPortalReplay = HC.rectangle(164, 36, 64, 64)
+  rectPortalReplay1 =HC.rectangle(500,336 ,64 ,64 )
 
   rectBoxUp = HC.rectangle(0,-1,1920,1)       --0,-1, ,
   rectBoxDown = HC.rectangle (0,1080,1920,1) --0,1080,  ,
@@ -130,7 +135,7 @@ function love.update(dt)
       if rectPlayer:collidesWith(rectPortal3) then
           Portal2Collision2()
       end
-      if rectPlayer:collidesWith(rectPortalReplay) then
+      if rectPlayer:collidesWith(rectPortalReplay) or rectPlayer:collidesWith(rectPortalReplay1) then
         Replay()
       end
       if rectPlayer:collidesWith(rectPortalExit) then
@@ -166,7 +171,7 @@ function love.update(dt)
       if rectPlayer:collidesWith(rectPortal3) then
           Portal2Collision2()
       end
-      if rectPlayer:collidesWith(rectPortalReplay) then
+      if rectPlayer:collidesWith(rectPortalReplay) or rectPlayer:collidesWith(rectPortalReplay1) then
         Replay()
       end
       if rectPlayer:collidesWith(rectPortalExit) then
@@ -217,6 +222,10 @@ end
     love.graphics.draw(portal, 564, 336)
     love.graphics.draw(portalExit, 1264, 36)
     love.graphics.draw(portalReplay,164, 36 )
+    love.graphics.draw(portalReplay,500,336)
+
+    --rectPortalReplay1:draw('fill')
+
 
 end
 
