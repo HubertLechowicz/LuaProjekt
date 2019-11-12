@@ -9,9 +9,11 @@ elapsedTime2 = 0
 
 playerSpeed = 200
 enemySpeed = 200
+
 mightAsWellJump = -300
+
 isWalking = false
-playerHeightAsFuck = 0
+
 enemy_x = 640 -- 640x640 jest zjebane lokacja poczatkowa
 enemy_y = 640
 player_x = 64
@@ -36,13 +38,15 @@ portal2_x = 88
 portal2_y = 636
 portal3_x = 564
 portal3_y = 336
+portal4_x = 1264
+portal4_y = 36
 
 portalReplay_x = 164
 portalReplay_y = 36
 portalReplay2_x = 500
 portalReplay2_y = 336
-portalExit_x = 1264
-portalExit_y = 37
+portalExit_x = 9999999
+portalExit_y = 9999999
 
 kickback  = 12
 DirectionChange = false
@@ -52,7 +56,7 @@ local audio = love.audio.newSource('music/banditradio.mp3','static')
 local NANI = love.audio.newSource('music/NANI.mp3', 'static')
 function love.load()
     audio:setLooping(true)
-    --audio:play()
+    audio:play()
 
 HC = require 'HC'
 require 'SpriteFunctions'
@@ -71,6 +75,7 @@ require 'SpriteFunctions'
   rectPortal = HC.rectangle(portal_x,portal_y,64, 64) --214 900
   rectPortal2 = HC.rectangle(portal2_x , portal2_y  ,64, 64) -- 88 636
   rectPortal3 = HC.rectangle(portal3_x ,portal3_y  ,64, 64) -- 564 336
+  rectPortal4 = HC.rectangle(portal4_x ,portal4_y  ,64, 64) -- 564 336
 
   rectPortalExit = HC.rectangle(portalExit_x ,portalExit_y, 64, 64) --1264 36
   rectPortalReplay = HC.rectangle(portalReplay_x,portalReplay_y, 64, 64) -- 164 36
@@ -159,6 +164,12 @@ function love.update(dt)
     if rectPlayer:collidesWith(rectPortal3) then
         Portal2Collision2()
     end
+    if rectPlayer:collidesWith(rectPortal4) then
+      Wait()
+    end
+    if rectPlayer:collidesWith(rectPortalExit) then
+      love.event.quit(0)
+    end
     if rectPlayer:collidesWith(rectPortalReplay) or rectPlayer:collidesWith(rectPortalReplay2) then
       Replay()
     end
@@ -168,7 +179,6 @@ function love.update(dt)
     if rectPlayer:collidesWith(rectBoxLeft) then
       player_x = player_x + 1920
     end
-
     while  (elapsedTime2 > 0.01) do
           enemy_x = enemy_x + enemySpeed * dt
           rectEnemy:moveTo(enemy_x + 32,enemy_y + 32)
@@ -182,13 +192,8 @@ function love.update(dt)
       end
 
     if love.keyboard.isDown("right") or love.keyboard.isDown('d') then
-      if rectPlayer:collidesWith(rectFloor) or rectPlayer:collidesWith(rectFloor2) or rectPlayer:collidesWith(rectFloor3) or rectPlayer:collidesWith(rectFloor4) then
-          player_y = player_y - 5
-      end
-      if rectPlayer:collidesWith(rectPortalExit) then
-        player_x = player_x - kickback
-        Wait()
-      end
+
+
         isWalking = true
         player_x = player_x + playerSpeed * dt
         rectPlayer:moveTo(player_x + 32,player_y +32)
@@ -203,9 +208,6 @@ function love.update(dt)
         end
     end
     if love.keyboard.isDown("left") or love.keyboard.isDown('a') then
-      if rectPlayer:collidesWith(rectPortalExit) then
-        love.event.quit(0)
-      end
         isWalking = true
         player_x = player_x - playerSpeed * dt
         rectPlayer:moveTo(player_x + 32,player_y +32)
@@ -220,9 +222,14 @@ function love.update(dt)
         end
 
     end
-      if love.keyboard.isDown("down") or love.keyboard.isDown('s')then
-          player_y = player_y - mightAsWellJump * dt
-      end
+    if love.keyboard.isDown("w") or love.keyboard.isDown("up") then
+      player_y = player_y + mightAsWellJump * dt
+      rectPlayer:moveTo(player_x + 32,player_y +32)
+    end
+    if love.keyboard.isDown("s") or love.keyboard.isDown("down") then
+      player_y = player_y - mightAsWellJump * dt
+      rectPlayer:moveTo(player_x + 32,player_y +32)
+    end
 
 end
 
@@ -245,6 +252,7 @@ function love.draw()
     love.graphics.draw(portal, portal_x,portal_y)
     love.graphics.draw(portal, portal2_x,portal2_y)
     love.graphics.draw(portal, portal3_x,portal3_y)
+    love.graphics.draw(portal, portal4_x,portal4_y)
 
     love.graphics.draw(portalExit, portalExit_x, portalExit_y)
     love.graphics.draw(portalReplay,portalReplay_x, portalReplay_y)
@@ -287,6 +295,7 @@ local Functions do
     player_y = 900
     enemy_x = 320
     enemy_y = 640
+    rectPlayer:moveTo(player_x + 32,player_y +32)
   end
 
   function PortalCollision()
@@ -336,6 +345,8 @@ local Functions do
 
     portal_x, portal_y = 9999999
     rectPortal:moveTo(portalExit_x + 32 , portalExit_y + 32)
+    portal4_x, portal4_y = 9999999
+    rectPortal:moveTo(portalExit_x + 32 , portalExit_y + 32)
 
     portal2_x, portal2_y = 9999999
     rectPortal2:moveTo(portalExit_x + 32 , portalExit_y + 32)
@@ -348,10 +359,5 @@ local Functions do
 
     portalReplay2_x, portalReplay2_y = 9999999
     rectPortalReplay2:moveTo(portalExit_x + 32 , portalExit_y + 32)
-
-
-
-
   end
-
 end
