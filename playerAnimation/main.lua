@@ -9,27 +9,40 @@ elapsedTime2 = 0
 
 playerSpeed = 200
 enemySpeed = 200
+mightAsWellJump = -300
 isWalking = false
-
+playerHeightAsFuck = 0
 enemy_x = 640 -- 640x640 jest zjebane lokacja poczatkowa
 enemy_y = 640
-
 player_x = 64
 player_y = 900
-
 floor_x = 64
 floor_y = 700
 floor2_x = 114
 floor2_y = 400
 floor3_x = 164
 floor3_y = 100
+floor4_x = 1
+floor4_y = 964
+floor5_x = 9999999
+floor5_y = 9999999
+floor6_x = 9999999
+floor6_y = 9999999
+floorWidth = 32
 
-portal_x = 0
-portal_y = 0
---portalReplay_x =
---portalReplay_y =
---portalExit_x =
---portalExit_y =
+portal_x = 214
+portal_y = 900
+portal2_x = 88
+portal2_y = 636
+portal3_x = 564
+portal3_y = 336
+
+portalReplay_x = 164
+portalReplay_y = 36
+portalReplay2_x = 500
+portalReplay2_y = 336
+portalExit_x = 1264
+portalExit_y = 37
 
 kickback  = 12
 DirectionChange = false
@@ -39,26 +52,30 @@ local audio = love.audio.newSource('music/banditradio.mp3','static')
 local NANI = love.audio.newSource('music/NANI.mp3', 'static')
 function love.load()
     audio:setLooping(true)
-    audio:play()
+    --audio:play()
 
 HC = require 'HC'
 require 'SpriteFunctions'
---loadfile 'SpriteFunctions.lua'()
---scale = 'adaptive'
+
+
   rectPlayer = HC.rectangle(player_x,player_y,32,64)
   rectEnemy = HC.rectangle(enemy_x,enemy_y,64,64)
 
-  rectFloor = HC.rectangle(floor_x, floor_y, 1200, 16)
-  rectFloor2 = HC.rectangle(floor2_x, floor2_y, 1200, 16)
-  rectFloor3 = HC.rectangle(floor3_x, floor3_y, 1200,16)
+  rectFloor = HC.rectangle(floor_x, floor_y, 1200, floorWidth)
+  rectFloor2 = HC.rectangle(floor2_x, floor2_y, 1200, floorWidth)
+  rectFloor3 = HC.rectangle(floor3_x, floor3_y, 1200,floorWidth)
+  rectFloor4 = HC.rectangle(floor4_x,floor4_y, 1200, floorWidth)
+  rectFloor5 = HC.rectangle(floor5_x,floor5_y, 1200, floorWidth)
+  rectFloor6 = HC.rectangle(floor6_x, floor6_y, 1200, floorWidth)
 
-  rectPortal = HC.rectangle(portal_x + 214,portal_y + 900 ,64, 64) --214 900
-  rectPortal2 = HC.rectangle(portal_x + 88, portal_y + 636 ,64, 64) -- 88 636
-  rectPortal3 = HC.rectangle(portal_x + 564,portal_y + 336 ,64, 64) -- 564 336
+  rectPortal = HC.rectangle(portal_x,portal_y,64, 64) --214 900
+  rectPortal2 = HC.rectangle(portal2_x , portal2_y  ,64, 64) -- 88 636
+  rectPortal3 = HC.rectangle(portal3_x ,portal3_y  ,64, 64) -- 564 336
 
-  rectPortalExit = HC.rectangle(portal_x + 1264,portal_y + 36, 64, 64) --1264 36
-  rectPortalReplay = HC.rectangle(portal_x + 164,portal_x +  36, 64, 64) -- 164 36
-  rectPortalReplay1 =HC.rectangle(portal_x + 500,portal_y + 336 ,64 ,64 ) -- 500 336
+  rectPortalExit = HC.rectangle(portalExit_x ,portalExit_y, 64, 64) --1264 36
+  rectPortalReplay = HC.rectangle(portalReplay_x,portalReplay_y, 64, 64) -- 164 36
+  rectPortalReplay2 = HC.rectangle(portalReplay2_x,portalReplay2_y,64 ,64 ) -- 500 336
+
 
   rectBoxUp = HC.rectangle(0,-1,1920,1)       --0,-1, ,
   rectBoxDown = HC.rectangle (0,1080,1920,1) --0,1080,  ,
@@ -105,6 +122,7 @@ local Frames do
 
     activeFrame = walkingFramesDown[currentFrame]
   end
+
 end
 
 function love.update(dt)
@@ -123,21 +141,11 @@ function love.update(dt)
         player_x = 1200
         player_y = 36
       end
+
+
       love.window.setFullscreen(true, "desktop")
     elapsedTime = elapsedTime + dt
     elapsedTime2 = elapsedTime2 + dt
-
-    while  (elapsedTime2 > 0.01) do
-          enemy_x = enemy_x + enemySpeed * dt
-          rectEnemy:moveTo(enemy_x + 32,enemy_y + 32)
-          elapsedTime2 = 0
-          if enemy_x > 1000 then -- 1000
-            enemySpeed = -enemySpeed
-          end
-          if enemy_x < 300 then --300
-            enemySpeed = -enemySpeed
-          end
-      end
 
     if rectPlayer:collidesWith(rectEnemy) then
         EnemyCollision()
@@ -151,18 +159,34 @@ function love.update(dt)
     if rectPlayer:collidesWith(rectPortal3) then
         Portal2Collision2()
     end
-    if rectPlayer:collidesWith(rectPortalReplay) or rectPlayer:collidesWith(rectPortalReplay1) then
+    if rectPlayer:collidesWith(rectPortalReplay) or rectPlayer:collidesWith(rectPortalReplay2) then
       Replay()
     end
-
     if rectPlayer:collidesWith(rectBoxRight) then
       player_x = player_x - 1920
     end
     if rectPlayer:collidesWith(rectBoxLeft) then
       player_x = player_x + 1920
     end
+
+    while  (elapsedTime2 > 0.01) do
+          enemy_x = enemy_x + enemySpeed * dt
+          rectEnemy:moveTo(enemy_x + 32,enemy_y + 32)
+          elapsedTime2 = 0
+          if enemy_x > 1000 then -- 1000
+            enemySpeed = -enemySpeed
+          end
+          if enemy_x < 300 then --300
+            enemySpeed = -enemySpeed
+          end
+      end
+
     if love.keyboard.isDown("right") or love.keyboard.isDown('d') then
+      if rectPlayer:collidesWith(rectFloor) or rectPlayer:collidesWith(rectFloor2) or rectPlayer:collidesWith(rectFloor3) or rectPlayer:collidesWith(rectFloor4) then
+          player_y = player_y - 5
+      end
       if rectPlayer:collidesWith(rectPortalExit) then
+        player_x = player_x - kickback
         Wait()
       end
         isWalking = true
@@ -196,6 +220,10 @@ function love.update(dt)
         end
 
     end
+      if love.keyboard.isDown("down") or love.keyboard.isDown('s')then
+          player_y = player_y - mightAsWellJump * dt
+      end
+
 end
 
 function love.draw()
@@ -206,12 +234,6 @@ function love.draw()
      end
   end
 
---for k = 2,28 do
---  love.graphics.draw(platform, k * platform:getWidth(), floor3_y)
---  love.graphics.draw(platform, (k-1) * platform:getWidth(), floor2_y)
---  love.graphics.draw(platform, (k-2) * platform:getWidth(), floor_y)
---end
-
   for i = 1,#text do
         love.graphics.setColor(255,255,255, 255 - (i-1) * 6)
         love.graphics.print(text[#text - (i-1)], 10, i * 15)
@@ -219,26 +241,40 @@ function love.draw()
 
     love.graphics.draw(player,activeFrame, player_x, player_y)
     love.graphics.draw(enemy, enemy_x, enemy_y)
-    love.graphics.draw(portal, portal_x  + 216,portal_y + 900)
-    love.graphics.draw(portal, portal_x + 88,portal_y +  636 )
-    love.graphics.draw(portal, portal_x + 564,portal_y +  336)
-    love.graphics.draw(portalExit, portal_x + 1264,portal_y +  36)
-    love.graphics.draw(portalReplay,portal_x + 164, portal_y + 36 )
-    love.graphics.draw(portalReplay,portal_x + 500,portal_y + 336)
+
+    love.graphics.draw(portal, portal_x,portal_y)
+    love.graphics.draw(portal, portal2_x,portal2_y)
+    love.graphics.draw(portal, portal3_x,portal3_y)
+
+    love.graphics.draw(portalExit, portalExit_x, portalExit_y)
+    love.graphics.draw(portalReplay,portalReplay_x, portalReplay_y)
+    love.graphics.draw(portalReplay,portalReplay2_x, portalReplay2_y)
+
     love.graphics.draw(platform, floor_x, floor_y)
+    love.graphics.draw(platform, floor2_x, floor2_y)
+    love.graphics.draw(platform, floor3_x, floor3_y)
+    love.graphics.draw(platform, floor4_x, floor4_y)
+    love.graphics.draw(platform, floor5_x, floor5_y)
+    love.graphics.draw(platform, floor6_x, floor6_y)
+
 
 
 
     rectFloor:draw('line')
     rectFloor2:draw('line')
     rectFloor3:draw('line')
+    rectFloor4:draw('line')
+    rectFloor5:draw('line')
+    rectFloor6:draw('line')
     rectPortal:draw('line')
     rectPortal2:draw('line')
     rectPortal3:draw('line')
     rectPortalExit:draw('line')
     rectPortalReplay:draw('line')
-    rectPortalReplay1:draw('line')
+    rectPortalReplay2:draw('line')
     rectEnemy:draw('line')
+    rectPlayer:draw('line')
+
 
 
 end
@@ -276,10 +312,45 @@ local Functions do
   end
 
   function Wait()
-    --enemy_y = 900 -- przesuwa zjeba na dol
-    floor_x = 700
-    floor_y = 1000
-    rectFloor:moveTo(floor_x + 600, floor_y + 8 ) -- nie ruszac 600 i 8 bo upierdole łapy przy barach
+    background = love.graphics.newImage("images/background2.png")
+    floor_x = 720
+    floor_y = 966
+    rectFloor:moveTo(floor_x + 600, floor_y + 16 ) -- nie ruszac 600 i 8 bo upierdole łapy przy barach
+    floor2_x = 0
+    floor2_y = 700
+    rectFloor2:moveTo(floor2_x + 600, floor2_y + 16 )
+    floor4_x = 960
+    floor4_y = 540
+    rectFloor4:moveTo(floor4_x + 600, floor4_y + 16)
+    floor5_x = 500
+    floor5_y = 336
+    rectFloor5:moveTo(floor5_x + 600, floor5_y + 16)
+    floor6_x = -1000
+    floor6_y = 966
+    rectFloor6:moveTo(floor6_x + 600, floor6_y + 16)
+
+
+    portalExit_x = 900
+    portalExit_y = 900
+    rectPortalExit:moveTo(portalExit_x + 32 , portalExit_y + 32) --tego tez kurwa nie ruszac
+
+    portal_x, portal_y = 9999999
+    rectPortal:moveTo(portalExit_x + 32 , portalExit_y + 32)
+
+    portal2_x, portal2_y = 9999999
+    rectPortal2:moveTo(portalExit_x + 32 , portalExit_y + 32)
+
+    portal3_x, portal3_y = 9999999
+    rectPortal3:moveTo(portalExit_x + 32 , portalExit_y + 32)
+
+    portalReplay_x, portalReplay_y = 9999999
+    rectPortalReplay:moveTo(portalExit_x + 32, portalExit_y + 32)
+
+    portalReplay2_x, portalReplay2_y = 9999999
+    rectPortalReplay2:moveTo(portalExit_x + 32 , portalExit_y + 32)
+
+
+
 
   end
 
